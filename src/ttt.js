@@ -1,4 +1,3 @@
-// @flow
 import React, { Component } from "react";
 import * as Styled from "./ttt.styled";
 
@@ -41,31 +40,59 @@ class Table extends Component {
 			winner: ""
 		};
 		this.state.gameHistory = [this.state.playNext];
+    this.initialState = Object.assign({},this.state);
 	}
 	
+	undoMove(toBeginning){
+		// if (toBeginning){
+		// 	this.setState(this.initialState);
+		// 	return;
+		// }
+		// // is there a last move to undo?
+		// if (this.state.gameHistory.length<2) {
+		// 	return;
+		// }
+		// // undo last move
+		// let gameHistory = this.state.gameHistory;
+		// gameHistory.slice(0,gameHistory.length-2);
+		// const playLast = gameHistory[gameHistory.length - 1];
+		// const playNext = Object.assign({}, playLast, { player: playLast.player==="X"?"O":"X" });
+		// gameHistory.push(playNext);
+		// this.setState({
+		// 	gameHistory:gameHistory,
+		// 	playLast:playLast,
+		// 	playNext:playNext
+		// });
+	}
+
 	handleMove(i){
-		
+		// invalid - game was over
+		if (!this.state.playNext) {
+			return;
+		}
+
 		// prepare new state:
 		const gameHistory = this.state.gameHistory;
 		const playLast = gameHistory[gameHistory.length - 1];
-		const playNext = Object.assign(playLast, { player: playLast.player==="X"?"O":"X" });
-		playNext.squares[i] = playLast.player;
+		playLast.squares[i] = playLast.player;
+		const playNext = Object.assign({}, playLast, { player: playLast.player==="X"?"O":"X" });
 		gameHistory.push(playNext);
-		
+
 		// set state:
     if (calculateWinner(playNext.squares)) {
 
 			// winner, stop!
 			this.setState({
+				playNext: undefined,
 				playLast: playLast,
 				gameHistory: gameHistory,
 				winner: playLast.player
 			});
-			alert("Game over - "+playNext.player+" wins!");
 		} else if (playNext.squares.indexOf("")===-1) {
 
 			// no more empty squares, stop!
 			this.setState({
+				playNext: undefined,
 				playLast: playLast,
 				gameHistory: gameHistory
 			});
@@ -82,7 +109,7 @@ class Table extends Component {
 	renderSquare(i) {
     return (
       <Td
-        value={this.state.playNext ? this.state.playNext.squares[i] : ""}
+        value={this.state.playLast ? this.state.playLast.squares[i] : ""}
 				onClick={()=>{this.handleMove(i)}}
       />
     );
@@ -95,11 +122,11 @@ class Table extends Component {
 		
 			// it's a tie :|
 		} else if (this.state.playLast && !this.state.playNext) {
-			return <button>It's a tie -_-</button>;
+			return <div>It's a tie -_- <button style={{display:"none"}} onClick={()=>{this.undoMove(true)}}>Play again &raquo;</button></div>;
 		
 			// next move
 		} else if (this.state.playLast && this.state.playNext) {
-			return <button>&laquo; undo {this.state.playLast.player}'s move</button>;
+			return <div>{this.state.playNext.player} player go now! <button style={{display:"none"}} onClick={()=>{this.undoMove()}}>...undo {this.state.playLast.player}'s move</button></div>;
 			
 			// intro
 		} else {
@@ -107,6 +134,7 @@ class Table extends Component {
 		}
 	}
   render() {
+
     return ([
       <Styled.Table key="Table"
 				style={{
@@ -153,7 +181,6 @@ class TBoard extends Component {
 		};
   }
   componentDidMount() {
-		console.log('css',Math.min(this.TBoard.offsetHeight, this.TBoard.offsetWidth) + "px");
     this.setState({
       cssWidthHeight:
         Math.min(this.TBoard.offsetHeight, this.TBoard.offsetWidth) + "px"
