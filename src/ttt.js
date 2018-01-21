@@ -30,42 +30,26 @@ class Tr extends Component {
 	* get 
 */
 class Table extends Component {
-  constructor() {
-    super();
-    this.state = { 
+	getInitialState(){
+		var state = { 
+			playLast: null,
 			playNext: {
 				player: "X",
 				squares: ["","","","","","","","",""]
 			},
 			winner: ""
 		};
-		this.state.gameHistory = [this.state.playNext];
-    this.initialState = Object.assign({},this.state);
+		state.gameHistory = [Object.assign({},state.playNext)];
+		return state;
 	}
-	
-	undoMove(toBeginning){
-		// if (toBeginning){
-		// 	this.setState(this.initialState);
-		// 	return;
-		// }
-		// // is there a last move to undo?
-		// if (this.state.gameHistory.length<2) {
-		// 	return;
-		// }
-		// // undo last move
-		// let gameHistory = this.state.gameHistory;
-		// gameHistory.slice(0,gameHistory.length-2);
-		// const playLast = gameHistory[gameHistory.length - 1];
-		// const playNext = Object.assign({}, playLast, { player: playLast.player==="X"?"O":"X" });
-		// gameHistory.push(playNext);
-		// this.setState({
-		// 	gameHistory:gameHistory,
-		// 	playLast:playLast,
-		// 	playNext:playNext
-		// });
+  constructor() {
+    super();
+		this.state = this.getInitialState();    
 	}
-
-	handleMove(i){
+	resetGame=()=>{
+		this.setState(this.getInitialState());
+	}
+	handleMove=(i)=>{
 		// invalid - game was over
 		if (!this.state.playNext) {
 			return;
@@ -106,7 +90,7 @@ class Table extends Component {
 			});
 		}		
 	}
-	renderSquare(i) {
+	renderSquare=(i)=>{
     return (
       <Td
         value={this.state.playLast ? this.state.playLast.squares[i] : ""}
@@ -114,26 +98,27 @@ class Table extends Component {
       />
     );
 	}
-	renderButton(){
+	renderButton=()=>{
 
 			// winner :)
 		if (this.state.winner) {
-			return <div>{this.state.playLast.player} wins!</div>;
+			return <div>{this.state.playLast.player} wins! <button onClick={this.resetGame}>Play again &raquo;</button></div>;
 		
 			// it's a tie :|
 		} else if (this.state.playLast && !this.state.playNext) {
-			return <div>It's a tie -_- <button style={{display:"none"}} onClick={()=>{this.undoMove(true)}}>Play again &raquo;</button></div>;
+			return <div>It's a tie -_- <button onClick={this.resetGame}>Play again &raquo;</button></div>;
 		
 			// next move
 		} else if (this.state.playLast && this.state.playNext) {
-			return <div>{this.state.playNext.player} player go now! <button style={{display:"none"}} onClick={()=>{this.undoMove()}}>...undo {this.state.playLast.player}'s move</button></div>;
+			return <div>{this.state.playNext.player} player go now!</div>;
 			
 			// intro
 		} else {
-			return <div>Tic Tac Toe</div>;
+			return <div>Tic Tac Toe... {this.state.playNext.player} player goes first.</div>;
 		}
 	}
   render() {
+		console.log('this.state',JSON.parse(JSON.stringify(this.state)));
 
     return ([
       <Styled.Table key="Table"
