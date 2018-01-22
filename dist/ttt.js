@@ -254,6 +254,7 @@
 				return _react2.default.createElement(Td, {
 					value: _this3.state.playLast ? _this3.state.playLast.squares[i] : "",
 					onClick: function onClick() {
+						// only move if allowed - if the space has not already been filled!
 						if (!_this3.state.playLast || !_this3.state.playLast.squares[i]) {
 							_this3.handleMove(i);
 						}
