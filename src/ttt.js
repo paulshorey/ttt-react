@@ -94,7 +94,12 @@ class Table extends Component {
     return (
       <Td
         value={this.state.playLast ? this.state.playLast.squares[i] : ""}
-				onClick={()=>{this.handleMove(i)}}
+				onClick={()=>{ 
+					// only move if allowed - if the space has not already been filled!
+					if(!this.state.playLast || !this.state.playLast.squares[i]){ 
+						this.handleMove(i) 
+					} 
+				}}
       />
     );
 	}

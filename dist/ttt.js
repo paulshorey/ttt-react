@@ -254,7 +254,9 @@
 				return _react2.default.createElement(Td, {
 					value: _this3.state.playLast ? _this3.state.playLast.squares[i] : "",
 					onClick: function onClick() {
-						_this3.handleMove(i);
+						if (!_this3.state.playLast || !_this3.state.playLast.squares[i]) {
+							_this3.handleMove(i);
+						}
 					}
 				});
 			};
